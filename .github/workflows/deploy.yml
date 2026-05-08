@@ -28,6 +28,14 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Create ECR repositories if they don't exist
+        run: |
+          SERVICES=(auth-service user-service booking-service messaging-service submission-service session-service)
+          for SVC in "${SERVICES[@]}"; do
+            aws ecr describe-repositories --repository-names hiresphere/$SVC --region $AWS_REGION 2>/dev/null \
+              || aws ecr create-repository --repository-name hiresphere/$SVC --region $AWS_REGION
+          done
+
       - name: Build and push Docker images
         run: |
           SERVICES=(auth-service user-service booking-service messaging-service submission-service session-service)
