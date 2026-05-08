@@ -1,0 +1,57 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hiresphere-ingress
+  namespace: hiresphere
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: "YOUR_ACM_CERT_ARN"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 80
+          - path: /users
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 80
+          - path: /bookings
+            pathType: Prefix
+            backend:
+              service:
+                name: booking-service
+                port:
+                  number: 80
+          - path: /messages
+            pathType: Prefix
+            backend:
+              service:
+                name: messaging-service
+                port:
+                  number: 80
+          - path: /submissions
+            pathType: Prefix
+            backend:
+              service:
+                name: submission-service
+                port:
+                  number: 80
+          - path: /sessions
+            pathType: Prefix
+            backend:
+              service:
+                name: session-service
+                port:
+                  number: 80

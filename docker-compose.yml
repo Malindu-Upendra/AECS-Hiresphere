@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build: ./services/auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
+    networks:
+      - hiresphere-net
+
+  user-service:
+    build: ./services/user-service
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
+      USERS_TABLE: hiresphere-users
+    networks:
+      - hiresphere-net
+
+  booking-service:
+    build: ./services/booking-service
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
+      BOOKINGS_TABLE: hiresphere-bookings
+      SLOTS_TABLE: hiresphere-slots
+      BOOKING_EVENTS_QUEUE_URL: ${BOOKING_EVENTS_QUEUE_URL}
+    networks:
+      - hiresphere-net
+
+  messaging-service:
+    build: ./services/messaging-service
+    ports:
+      - "3004:3004"
+    environment:
+      PORT: 3004
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
+      MESSAGES_TABLE: hiresphere-messages
+    networks:
+      - hiresphere-net
+
+  submission-service:
+    build: ./services/submission-service
+    ports:
+      - "3005:3005"
+    environment:
+      PORT: 3005
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
+      SUBMISSIONS_TABLE: hiresphere-submissions
+      TASKS_TABLE: hiresphere-tasks
+      S3_BUCKET: ${S3_BUCKET}
+    networks:
+      - hiresphere-net
+
+  session-service:
+    build: ./services/session-service
+    ports:
+      - "3006:3006"
+    environment:
+      PORT: 3006
+      AWS_REGION: ${AWS_REGION}
+      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
+    networks:
+      - hiresphere-net
+
+networks:
+  hiresphere-net:
+    driver: bridge

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hiresphere-config
+  namespace: hiresphere
+data:
+  AWS_REGION: "ap-southeast-1"
+  USERS_TABLE: "hiresphere-users"
+  BOOKINGS_TABLE: "hiresphere-bookings"
+  SLOTS_TABLE: "hiresphere-slots"
+  PACKAGES_TABLE: "hiresphere-packages"
+  PURCHASES_TABLE: "hiresphere-purchases"
+  MESSAGES_TABLE: "hiresphere-messages"
+  SUBMISSIONS_TABLE: "hiresphere-submissions"
+  TASKS_TABLE: "hiresphere-tasks"
+  S3_BUCKET: "hiresphere-submissions-793424482103"

@@ -1,0 +1,87 @@
+name: Build, Push & Deploy
+
+on:
+  push:
+    branches: [main]
+
+env:
+  AWS_REGION: ap-southeast-1
+  ECR_REGISTRY: 793424482103.dkr.ecr.ap-southeast-1.amazonaws.com
+  EKS_CLUSTER: hiresphere-cluster
+
+jobs:
+  deploy:
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker images
+        run: |
+          SERVICES=(auth-service user-service booking-service messaging-service submission-service session-service)
+          for SVC in "${SERVICES[@]}"; do
+            echo "==> Building $SVC..."
+            docker build \
+              -t $ECR_REGISTRY/hiresphere/$SVC:${{ github.sha }} \
+              -t $ECR_REGISTRY/hiresphere/$SVC:latest \
+              ./services/$SVC
+            docker push $ECR_REGISTRY/hiresphere/$SVC:${{ github.sha }}
+            docker push $ECR_REGISTRY/hiresphere/$SVC:latest
+            echo "    Pushed $SVC"
+          done
+
+      - name: Update kubeconfig for EKS
+        run: aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
+
+      - name: Apply namespace and configmap
+        run: |
+          kubectl apply -f infrastructure/k8s/namespace.yaml
+          kubectl apply -f infrastructure/k8s/configmap.yaml
+
+      - name: Create / update K8s secrets from GitHub Secrets
+        run: |
+          kubectl create secret generic hiresphere-secrets \
+            --namespace hiresphere \
+            --from-literal=COGNITO_USER_POOL_ID=${{ secrets.COGNITO_USER_POOL_ID }} \
+            --from-literal=COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }} \
+            --from-literal=BOOKING_EVENTS_QUEUE_URL=${{ secrets.BOOKING_EVENTS_QUEUE_URL }} \
+            --save-config --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply service and deployment manifests
+        run: |
+          SERVICES=(auth-service user-service booking-service messaging-service submission-service session-service)
+          for SVC in "${SERVICES[@]}"; do
+            kubectl apply -f infrastructure/k8s/$SVC.yaml
+          done
+          kubectl apply -f infrastructure/k8s/hpa.yaml
+          kubectl apply -f infrastructure/k8s/ingress.yaml
+
+      - name: Rolling update with new image SHA
+        run: |
+          SERVICES=(auth-service user-service booking-service messaging-service submission-service session-service)
+          for SVC in "${SERVICES[@]}"; do
+            kubectl set image deployment/$SVC $SVC=$ECR_REGISTRY/hiresphere/$SVC:${{ github.sha }} -n hiresphere
+          done
+
+      - name: Wait for rollouts to complete
+        run: |
+          SERVICES=(auth-service user-service booking-service messaging-service submission-service session-service)
+          for SVC in "${SERVICES[@]}"; do
+            echo "==> Waiting for $SVC..."
+            kubectl rollout status deployment/$SVC -n hiresphere --timeout=300s
+          done
+
+      - name: Print ingress URL
+        run: kubectl get ingress -n hiresphere
