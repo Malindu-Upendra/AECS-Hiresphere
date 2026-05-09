@@ -67,6 +67,14 @@ jobs:
             --from-literal=BOOKING_EVENTS_QUEUE_URL=${{ secrets.BOOKING_EVENTS_QUEUE_URL }} \
             --save-config --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Scale down all services to 1 replica before rollout
+        run: |
+          SERVICES=(auth-service user-service booking-service messaging-service submission-service session-service)
+          for SVC in "${SERVICES[@]}"; do
+            kubectl scale deployment/$SVC --replicas=1 -n hiresphere 2>/dev/null || true
+          done
+          sleep 20
+
       - name: Apply service and deployment manifests
         run: |
           SERVICES=(auth-service user-service booking-service messaging-service submission-service session-service)
