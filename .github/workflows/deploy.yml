@@ -81,7 +81,6 @@ jobs:
           for SVC in "${SERVICES[@]}"; do
             kubectl apply -f infrastructure/k8s/$SVC.yaml
           done
-          kubectl apply -f infrastructure/k8s/hpa.yaml
           kubectl apply -f infrastructure/k8s/ingress.yaml
 
       - name: Rolling update with new image SHA
@@ -98,6 +97,9 @@ jobs:
             echo "==> Waiting for $SVC..."
             kubectl rollout status deployment/$SVC -n hiresphere --timeout=1000s
           done
+
+      - name: Apply HPA after rollouts complete
+        run: kubectl apply -f infrastructure/k8s/hpa.yaml
 
       - name: Print ingress URL
         run: kubectl get ingress -n hiresphere
