@@ -5,6 +5,7 @@ metadata:
   namespace: hiresphere
 spec:
   replicas: 2
+  progressDeadlineSeconds: 1800
   selector:
     matchLabels:
       app: booking-service
