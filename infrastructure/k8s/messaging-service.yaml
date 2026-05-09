@@ -14,6 +14,7 @@ spec:
       labels:
         app: messaging-service
     spec:
+      terminationGracePeriodSeconds: 5
       containers:
         - name: messaging-service
           image: 793424482103.dkr.ecr.ap-southeast-1.amazonaws.com/hiresphere/messaging-service:latest

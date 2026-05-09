@@ -14,6 +14,7 @@ spec:
       labels:
         app: session-service
     spec:
+      terminationGracePeriodSeconds: 5
       containers:
         - name: session-service
           image: 793424482103.dkr.ecr.ap-southeast-1.amazonaws.com/hiresphere/session-service:latest

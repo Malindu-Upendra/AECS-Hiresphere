@@ -14,6 +14,7 @@ spec:
       labels:
         app: user-service
     spec:
+      terminationGracePeriodSeconds: 5
       containers:
         - name: user-service
           image: 793424482103.dkr.ecr.ap-southeast-1.amazonaws.com/hiresphere/user-service:latest
