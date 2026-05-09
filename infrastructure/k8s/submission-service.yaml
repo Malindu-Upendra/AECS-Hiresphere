@@ -4,7 +4,7 @@ metadata:
   name: submission-service
   namespace: hiresphere
 spec:
-  replicas: 2
+  replicas: 1
   progressDeadlineSeconds: 1800
   selector:
     matchLabels:
