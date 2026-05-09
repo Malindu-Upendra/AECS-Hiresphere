@@ -28,13 +28,13 @@ spec:
               value: "3004"
           readinessProbe:
             httpGet:
-              path: /messages/health
+              path: /health
               port: 3004
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /messages/health
+              path: /health
               port: 3004
             initialDelaySeconds: 15
             periodSeconds: 20

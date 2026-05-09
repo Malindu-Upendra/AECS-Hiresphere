@@ -28,13 +28,13 @@ spec:
               value: "3005"
           readinessProbe:
             httpGet:
-              path: /submissions/health
+              path: /health
               port: 3005
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /submissions/health
+              path: /health
               port: 3005
             initialDelaySeconds: 15
             periodSeconds: 20
