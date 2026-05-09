@@ -88,7 +88,7 @@ jobs:
           SERVICES=(auth-service user-service booking-service messaging-service submission-service session-service)
           for SVC in "${SERVICES[@]}"; do
             echo "==> Waiting for $SVC..."
-            kubectl rollout status deployment/$SVC -n hiresphere --timeout=300s
+            kubectl rollout status deployment/$SVC -n hiresphere --timeout=1000s
           done
 
       - name: Print ingress URL
