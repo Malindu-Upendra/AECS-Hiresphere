@@ -122,9 +122,9 @@ jobs:
 
       - name: Deploy frontend to Amplify
         run: |
-          cd frontend
-          zip -r ../frontend-dist.zip dist/
-          cd ..
+          cd frontend/dist
+          zip -r ../../frontend-dist.zip .
+          cd ../..
 
           DEPLOYMENT=$(aws amplify create-deployment \
             --app-id $AMPLIFY_APP_ID \
