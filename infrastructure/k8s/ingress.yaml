@@ -40,6 +40,13 @@ spec:
                 name: messaging-service
                 port:
                   number: 80
+          - path: /tasks
+            pathType: Prefix
+            backend:
+              service:
+                name: submission-service
+                port:
+                  number: 80
           - path: /submissions
             pathType: Prefix
             backend:
