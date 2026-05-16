@@ -116,7 +116,6 @@ jobs:
           VITE_AWS_REGION: ap-southeast-1
           VITE_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
           VITE_COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
-          VITE_AWS_REGION: ap-southeast-1
           VITE_API_BASE_URL: https://d3695y0fpayrlg.cloudfront.net
           VITE_SESSION_SERVICE_URL: https://d3695y0fpayrlg.cloudfront.net
         run: npm ci && npm run build
