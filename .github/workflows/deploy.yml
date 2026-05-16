@@ -116,8 +116,9 @@ jobs:
           VITE_AWS_REGION: ap-southeast-1
           VITE_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
           VITE_COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
-          VITE_API_BASE_URL: http://k8s-hiresphe-hiresphe-359051a31d-1712585333.ap-southeast-1.elb.amazonaws.com
-          VITE_SESSION_SERVICE_URL: http://k8s-hiresphe-hiresphe-359051a31d-1712585333.ap-southeast-1.elb.amazonaws.com
+          VITE_AWS_REGION: ap-southeast-1
+          VITE_API_BASE_URL: https://d3695y0fpayrlg.cloudfront.net
+          VITE_SESSION_SERVICE_URL: https://d3695y0fpayrlg.cloudfront.net
         run: npm ci && npm run build
 
       - name: Deploy frontend to Amplify
